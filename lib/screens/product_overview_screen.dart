@@ -53,8 +53,8 @@ class ProductOverviewScreen extends StatelessWidget {
           childAspectRatio: 3 / 2,
         ),
         itemCount: products.length,
-        itemBuilder: (ctx, i) => ProductItem(
-            products[i].imgUrl, products[i].title, products[i].price),
+        itemBuilder: (ctx, i) =>
+            ProductItem(products[i].imgUrl, products[i].title, products[i].id),
       ),
     );
   }

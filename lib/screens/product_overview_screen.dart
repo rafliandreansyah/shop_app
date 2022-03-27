@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/widgets/product_item.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/widgets/badge.dart';
 
-import '../providers/product.dart';
 import '../widgets/products_list.dart';
-import '../providers/products.dart';
+import '../providers/cart.dart';
 
 enum ItemEmum { OnlyFavorite, ShowAll }
 
@@ -41,6 +40,16 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
                   child: Text('Show All'), value: ItemEmum.ShowAll),
             ],
           ),
+          Consumer<Cart>(
+            builder: (_, cart, child) => Badge(
+              child: child,
+              value: cart.prodCart.toString(),
+            ),
+            child: IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.shopping_cart),
+            ),
+          )
         ],
       ),
       body: ProductList(_isFavorite),

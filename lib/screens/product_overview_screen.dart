@@ -5,6 +5,7 @@ import 'package:shop_app/widgets/badge.dart';
 
 import '../widgets/products_list.dart';
 import '../providers/cart.dart';
+import '../widgets/app_drawer.dart';
 
 enum ItemEmum { OnlyFavorite, ShowAll }
 
@@ -19,6 +20,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: AppDrawer(),
       appBar: AppBar(
         title: const Text('Product Overview'),
         actions: [

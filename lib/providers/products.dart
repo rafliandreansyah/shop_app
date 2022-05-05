@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import 'product.dart';
 
@@ -45,12 +48,53 @@ class Products with ChangeNotifier {
     return _items.where((product) => product.isFavorite).toList();
   }
 
-  void setProduct() {
-    //_items.add(value);
-    notifyListeners();
+  Future<void> setProduct(Product product) async {
+    final url = Uri.parse(
+        'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products');
+
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'title': product.title,
+          'description': product.description,
+          'price': product.price,
+          'imageUrl': product.imgUrl,
+          'isFavorite': product.isFavorite,
+        }),
+      );
+
+      print(json.decode(response.body));
+      var newProduct = Product(
+          id: json.decode(response.body)['name'],
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imgUrl: product.imgUrl);
+      _items.add(newProduct);
+      notifyListeners();
+    } catch (onError) {
+      print(onError);
+      throw onError;
+    }
   }
 
   Product findById(String id) {
     return _items.firstWhere((product) => product.id == id);
+  }
+
+  void editProduct(String id, Product product) {
+    var index = _items.indexWhere((prod) => prod.id == id);
+    if (index >= 0) {
+      _items[index] = product;
+    } else {
+      print('index not found');
+    }
+    notifyListeners();
+  }
+
+  void deleteProduct(String id) {
+    _items.removeWhere((product) => product.id == id);
+    notifyListeners();
   }
 }

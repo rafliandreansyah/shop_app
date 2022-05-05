@@ -6,6 +6,8 @@ import '../providers/products.dart';
 
 import '../widgets/user_product_item.dart';
 
+import '../screens/edit_product_screen.dart';
+
 class UserProductScreen extends StatelessWidget {
   static final String routeName = '/user-product-screen';
 
@@ -17,7 +19,9 @@ class UserProductScreen extends StatelessWidget {
         title: const Text('Your Product'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(EditProductScreen.routeName);
+            },
             icon: const Icon(Icons.add),
           ),
         ],
@@ -30,6 +34,7 @@ class UserProductScreen extends StatelessWidget {
           itemBuilder: (_, i) => Column(
             children: [
               UserProductItem(
+                productData.items[i].id,
                 productData.items[i].title,
                 productData.items[i].imgUrl,
               ),

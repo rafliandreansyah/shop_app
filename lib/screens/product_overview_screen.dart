@@ -6,6 +6,7 @@ import 'package:shop_app/widgets/badge.dart';
 import '../widgets/products_list.dart';
 import '../providers/cart.dart';
 import '../widgets/app_drawer.dart';
+import '../providers/products.dart';
 
 enum ItemEmum { OnlyFavorite, ShowAll }
 
@@ -16,6 +17,35 @@ class ProductOverviewScreen extends StatefulWidget {
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   bool _isFavorite = false;
+  bool _isInit = true;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    //Provider.of<Products>(context).fetchAndSetProducts(); tidak berfungsi karena belum mendapatkan context
+
+    // Maka harus menggunakan beberapa cara dibawah ini
+    // #1 Provider.of<Products>(context, listen: false).fetchAndSetProducts(); jika memanggil provider pada init state harus dikasih listen false
+    // #2 Future.delayed(Duration.zero).then((_) => Provider.of<Products>(context).fetchAndSetProducts());
+    Provider.of<Products>(context, listen: false)
+        .fetchAndSetProducts()
+        .then((_) => {
+              setState(() {
+                _isLoading = false;
+              })
+            });
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // Atau dapat dipanggil di didChangeDependencies
+    // #3 if (_isInit) {
+    //   Provider.of<Products>(context).fetchAndSetProducts();
+    // }
+    // _isInit = false;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +87,11 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           )
         ],
       ),
-      body: ProductList(_isFavorite),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductList(_isFavorite),
     );
   }
 }

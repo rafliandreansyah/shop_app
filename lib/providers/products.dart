@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'product.dart';
+import '../models/http_exception.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -58,12 +59,16 @@ class Products with ChangeNotifier {
       final List<Product> loadedProducts = [];
 
       convertMap.forEach((prodId, value) {
-        loadedProducts.add(Product(
+        loadedProducts.add(
+          Product(
             id: prodId,
             title: value['title'],
             description: value['description'],
             price: value['price'],
-            imgUrl: value['imageUrl']));
+            imgUrl: value['imageUrl'],
+            isFavorite: value['isFavorite'],
+          ),
+        );
       });
 
       _items = loadedProducts;
@@ -108,9 +113,20 @@ class Products with ChangeNotifier {
     return _items.firstWhere((product) => product.id == id);
   }
 
-  void editProduct(String id, Product product) {
+  Future<void> editProduct(String id, Product product) async {
     var index = _items.indexWhere((prod) => prod.id == id);
     if (index >= 0) {
+      final url = Uri.parse(
+          'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+
+      await http.patch(url,
+          body: json.encode({
+            'title': product.title,
+            'price': product.price,
+            'description': product.description,
+            'imageUrl': product.imgUrl
+          }));
+
       _items[index] = product;
     } else {
       print('index not found');
@@ -118,8 +134,20 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((product) => product.id == id);
+  Future<void> deleteProduct(String id) async {
+    final indexProduct = _items.indexWhere((product) => product.id == id);
+    Product? existingProduct = _items[indexProduct];
+    final url = Uri.parse(
+        'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+    _items.removeAt(indexProduct);
     notifyListeners();
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      _items.insert(indexProduct, existingProduct);
+      notifyListeners();
+      throw HttpException('error delete product');
+    }
+    existingProduct = null;
   }
 }

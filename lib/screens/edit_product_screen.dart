@@ -90,12 +90,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
     _formKey.currentState?.save();
     if (_editedProduct.id != '') {
-      Provider.of<Products>(context, listen: false)
+      await Provider.of<Products>(context, listen: false)
           .editProduct(_editedProduct.id, _editedProduct);
-      setState(() {
-        isLoading = false;
-      });
-      Navigator.of(context).pop();
     } else {
       try {
         await Provider.of<Products>(context, listen: false)
@@ -114,13 +110,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                   ]);
             });
-      } finally {
-        setState(() {
-          isLoading = false;
-        });
-        Navigator.of(context).pop();
       }
+      // finally {
+      //   setState(() {
+      //     isLoading = false;
+      //   });
+      //   Navigator.of(context).pop();
+      // }
+
     }
+
+    setState(() {
+      isLoading = false;
+    });
+    Navigator.of(context).pop();
     //Navigator.of(context).pop();
 
     // print('title: ${_editedProduct.title}');

@@ -56,6 +56,9 @@ class Products with ChangeNotifier {
     try {
       final response = await http.get(url);
       final convertMap = jsonDecode(response.body) as Map<String, dynamic>;
+      if (convertMap == null) {
+        return;
+      }
       final List<Product> loadedProducts = [];
 
       convertMap.forEach((prodId, value) {

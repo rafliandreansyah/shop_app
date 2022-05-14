@@ -204,7 +204,7 @@ class _AuthCardState extends State<AuthCard> {
                 if (_isLoading)
                   const CircularProgressIndicator()
                 else
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () {},
                     child: Text(
                       _authMode == AuthMode.Login ? 'Login' : 'Sign Up',
@@ -215,24 +215,22 @@ class _AuthCardState extends State<AuthCard> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
+                    style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).primaryColor,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 4.0, horizontal: 16.0),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40.0,
-                      vertical: 8.0,
-                    ),
-                    color: Theme.of(context).primaryColor,
-                    textColor: Colors.white,
                   ),
-                FlatButton(
+                TextButton(
                   onPressed: _switchAuthMode,
                   child: Text(
-                      '${_authMode == AuthMode.Login ? 'SignUp' : 'Login'} Instead'),
-                  textColor: Theme.of(context).primaryColor,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    '${_authMode == AuthMode.Login ? 'SignUp' : 'Login'} Instead',
+                    style: TextStyle(color: Theme.of(context).primaryColor),
+                  ),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30.0, vertical: 4),
+                  ),
                 )
               ],
             ),

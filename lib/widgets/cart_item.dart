@@ -50,7 +50,7 @@ class CartItem extends StatelessWidget {
             title: const Text('Are you sure?'),
             content: const Text('Do you want to remove item from the cart?'),
             actions: [
-              FlatButton(
+              TextButton(
                 child: const Text(
                   'No',
                   style: TextStyle(
@@ -59,7 +59,7 @@ class CartItem extends StatelessWidget {
                 ),
                 onPressed: () => Navigator.of(ctx).pop(false),
               ),
-              FlatButton(
+              TextButton(
                 child: const Text(
                   'Yes',
                   style: TextStyle(

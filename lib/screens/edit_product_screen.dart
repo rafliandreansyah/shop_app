@@ -104,7 +104,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   title: Text('something wrong!'),
                   content: Text(onError.toString()),
                   actions: [
-                    FlatButton(
+                    TextButton(
                       onPressed: () => Navigator.of(context).pop(),
                       child: Text('Okey'),
                     ),

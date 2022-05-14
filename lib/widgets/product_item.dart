@@ -10,7 +10,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
-    var scaffold = Scaffold.of(context);
+    var scaffold = ScaffoldMessenger.of(context);
     print('Rebuild');
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),

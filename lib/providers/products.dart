@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'product.dart';
 import '../models/http_exception.dart';
+import '../providers/auth.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -41,6 +42,10 @@ class Products with ChangeNotifier {
     // ),
   ];
 
+  var authToken;
+
+  Products(this.authToken, this._items);
+
   List<Product> get items {
     return [..._items];
   }
@@ -51,7 +56,7 @@ class Products with ChangeNotifier {
 
   Future<void> fetchAndSetProducts() async {
     final url = Uri.parse(
-        'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products.json');
+        'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken');
 
     try {
       final response = await http.get(url);
@@ -83,7 +88,7 @@ class Products with ChangeNotifier {
 
   Future<void> setProduct(Product product) async {
     final url = Uri.parse(
-        'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products.json');
+        'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken');
 
     try {
       final response = await http.post(
@@ -120,7 +125,7 @@ class Products with ChangeNotifier {
     var index = _items.indexWhere((prod) => prod.id == id);
     if (index >= 0) {
       final url = Uri.parse(
-          'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+          'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken');
 
       await http.patch(url,
           body: json.encode({
@@ -141,7 +146,7 @@ class Products with ChangeNotifier {
     final indexProduct = _items.indexWhere((product) => product.id == id);
     Product? existingProduct = _items[indexProduct];
     final url = Uri.parse(
-        'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+        'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken');
     _items.removeAt(indexProduct);
     notifyListeners();
     final response = await http.delete(url);

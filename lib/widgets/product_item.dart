@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/providers/auth.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +11,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final auth = Provider.of<Auth>(context, listen: false);
     var scaffold = ScaffoldMessenger.of(context);
     print('Rebuild');
     return ClipRRect(
@@ -29,7 +31,7 @@ class ProductItem extends StatelessWidget {
             builder: (context, product, _) => IconButton(
               onPressed: () async {
                 try {
-                  await product.toggleFavorite();
+                  await product.toggleFavorite(auth.token ?? '');
                 } catch (onError) {
                   scaffold.showSnackBar(
                     SnackBar(

@@ -1,6 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/auth.dart';
+
+import '../models/http_exception.dart';
 
 enum AuthMode { Login, Signup }
 
@@ -105,6 +110,22 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
+  void _showDialogError(String message) {
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: const Text('An Accoured Error!'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('Okay'))
+            ],
+          );
+        });
+  }
+
   void _switchAuthMode() {
     if (_authMode == AuthMode.Signup) {
       setState(() {
@@ -117,18 +138,44 @@ class _AuthCardState extends State<AuthCard> {
     }
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
+    _formKey.currentState!.save();
     setState(() {
       _isLoading = true;
     });
 
-    if (_authMode == AuthMode.Login) {
-      // Login
-    } else {
-      // Signup
+    try {
+      if (_authMode == AuthMode.Login) {
+        await Provider.of<Auth>(context, listen: false)
+            .login(_authForm['email']!, _authForm['password']!);
+      } else {
+        await Provider.of<Auth>(context, listen: false)
+            .signUp(_authForm['email']!, _authForm['password']!);
+      }
+    } on HttpException catch (error) {
+      String errorFlag = error.message;
+      String errorMessage = 'Something missing';
+      if (errorFlag.contains('EMAIL_EXISTS')) {
+        errorMessage = 'The email address is already in use by another account';
+      } else if (errorFlag.contains('OPERATION_NOT_ALLOWED')) {
+        errorMessage = 'Login disable, please contact the admin!';
+      } else if (errorFlag.contains('TOO_MANY_ATTEMPTS_TRY_LATER')) {
+        errorMessage = 'Request account blocked!';
+      } else if (errorFlag.contains('EMAIL_NOT_FOUND')) {
+        errorMessage =
+            'There is no user record corresponding to this identifier email!';
+      } else if (errorFlag.contains('INVALID_PASSWORD')) {
+        errorMessage = 'Invalid password, please try again';
+      } else if (errorFlag.contains('USER_DISABLED')) {
+        errorMessage = 'User is disabled, please contact the admin!';
+      }
+
+      _showDialogError(errorMessage);
+    } catch (error) {
+      _showDialogError('Not authenticated, please try again!');
     }
 
     setState(() {
@@ -187,6 +234,7 @@ class _AuthCardState extends State<AuthCard> {
                 if (_authMode == AuthMode.Signup)
                   TextFormField(
                     enabled: _authMode == AuthMode.Signup,
+                    obscureText: true,
                     decoration:
                         const InputDecoration(labelText: 'Confirm Password'),
                     validator: _authMode == AuthMode.Signup
@@ -205,7 +253,7 @@ class _AuthCardState extends State<AuthCard> {
                   const CircularProgressIndicator()
                 else
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async => _submit(),
                     child: Text(
                       _authMode == AuthMode.Login ? 'Login' : 'Sign Up',
                       style: const TextStyle(

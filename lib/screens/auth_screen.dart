@@ -139,6 +139,7 @@ class _AuthCardState extends State<AuthCard> {
   }
 
   Future<void> _submit() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
     }

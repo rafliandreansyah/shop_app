@@ -43,8 +43,9 @@ class Products with ChangeNotifier {
   ];
 
   var authToken;
+  var userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> get items {
     return [..._items];
@@ -54,9 +55,10 @@ class Products with ChangeNotifier {
     return _items.where((product) => product.isFavorite).toList();
   }
 
-  Future<void> fetchAndSetProducts() async {
-    final url = Uri.parse(
-        'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken');
+  Future<void> fetchAndSetProducts([bool isUserFetch = false]) async {
+    var filtering = isUserFetch ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    var url = Uri.parse(
+        'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken&$filtering');
 
     try {
       final response = await http.get(url);
@@ -64,6 +66,13 @@ class Products with ChangeNotifier {
       if (convertMap == null) {
         return;
       }
+
+      url = Uri.parse(
+          'https://flutter-shopapp-2f3cb-default-rtdb.asia-southeast1.firebasedatabase.app/favoriteProducts/$userId.json?auth=$authToken');
+      final responseFavorite = await http.get(url);
+      final favoriteData =
+          json.decode(responseFavorite.body) as Map<String, dynamic>;
+
       final List<Product> loadedProducts = [];
 
       convertMap.forEach((prodId, value) {
@@ -74,7 +83,8 @@ class Products with ChangeNotifier {
             description: value['description'],
             price: value['price'],
             imgUrl: value['imageUrl'],
-            isFavorite: value['isFavorite'],
+            isFavorite:
+                favoriteData == null ? false : favoriteData[prodId] ?? false,
           ),
         );
       });
@@ -99,6 +109,7 @@ class Products with ChangeNotifier {
           'price': product.price,
           'imageUrl': product.imgUrl,
           'isFavorite': product.isFavorite,
+          'creatorId': userId,
         }),
       );
 

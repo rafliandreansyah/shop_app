@@ -41,7 +41,9 @@ class _OrderScreenState extends State<OrderScreen> {
       body: FutureBuilder(
         future: Provider.of<Orders>(context, listen: false).fetchAndSetOrders(),
         builder: (ctx, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else {
             if (snapshot.error != null) {
               return const Center(
                 child: Text('an error accurred!'),

@@ -16,39 +16,54 @@ class ProductDetailScreen extends StatelessWidget {
         Provider.of<Products>(context, listen: false).findById(productId);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(product.title),
-      ),
-      body: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            height: 300,
-            child: Image.network(
-              product.imgUrl,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            '\$${product.price}',
-            style: const TextStyle(fontSize: 20, color: Colors.grey),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 30.0,
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              product.description,
-              style: const TextStyle(
-                fontSize: 16,
+      // appBar: AppBar(
+      //   title: Text(product.title),
+      // ),
+
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 300,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(product.title),
+              background: Hero(
+                tag: product.id,
+                child: Image.network(
+                  product.imgUrl,
+                  fit: BoxFit.cover,
+                ),
               ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  '\$${product.price}',
+                  style: const TextStyle(fontSize: 20, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30.0,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    product.description,
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             ),
           )
         ],
